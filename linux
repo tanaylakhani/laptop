@@ -1,0 +1,202 @@
+#!/usr/bin/env bash
+### end common-components/bash-shebang
+
+# Welcome to the thoughtbot laptop script! Be prepared to turn your laptop (or
+# desktop, no haters here) into an awesome development machine.
+### end common-components/header
+
+trap 'ret=$?; test $ret -ne 0 && printf "failed\n\n" >&2; exit $ret' EXIT
+
+set -e
+### end common-components/exit-trap
+
+if [[ ! -d "$HOME/.bin/" ]]; then
+  mkdir "$HOME/.bin"
+fi
+
+if [ ! -f "$HOME/.bashrc" ]; then
+  touch "$HOME/.bashrc"
+fi
+
+fancy_echo() {
+  printf "\n%b\n" "$1"
+}
+
+append_to_bashrc() {
+  local text="$1" bashrc
+  local skip_new_line="${2:-0}"
+
+  if [ -w "$HOME/.bashrc.local" ]; then
+    bashrc="$HOME/.bashrc.local"
+  else
+    bashrc="$HOME/.bashrc"
+  fi
+
+  if ! grep -Fqs "$text" "$bashrc"; then
+    if [ "$skip_new_line" -eq 1 ]; then
+      printf "%s\n" "$text" >> "$bashrc"
+    else
+      printf "\n%s\n" "$text" >> "$bashrc"
+    fi
+  fi
+}
+
+### end common-components/shared-functions
+
+
+
+append_to_bashrc 'export PATH="$HOME/.bin:$PATH"'
+### end common-components/check-home-bin
+
+if ! grep -qiE 'trusty' /etc/os-release; then
+  fancy_echo "Sorry! we don't currently support that distro."
+  exit 1
+fi
+### end linux-components/distro-check
+
+fancy_echo "Updating system packages ..."
+  if command -v aptitude >/dev/null; then
+    fancy_echo "Using aptitude ..."
+  else
+    fancy_echo "Installing aptitude ..."
+    sudo apt-get install -y aptitude
+  fi
+
+  sudo aptitude update
+### end linux-components/debian-package-update
+
+fancy_echo "Installing git, for source control management ..."
+  sudo aptitude install -y git-buildpackage git
+
+fancy_echo "Installing base ruby build dependencies ..."
+  sudo aptitude build-dep -y ruby1.9.3
+
+fancy_echo "Installing libraries for common gem dependencies ..."
+  sudo aptitude install -y build-essential zlib1g-dev libssl-dev libxslt-dev libxml2-dev libreadline-dev libyaml-dev
+
+fancy_echo "Installing sqlite3, for prototyping database-backed rails apps"
+ sudo aptitude install -y libsqlite3-dev sqlite3
+
+fancy_echo "Installing MySQL, an open source relational database ..."
+  sudo aptitude install -y libmysqlclient-dev mysql-server-5.6
+
+fancy_echo "Installing Redis, a good key-value database ..."
+  sudo aptitude install -y redis-server
+
+fancy_echo "Installing Memcached, a good cache server..."
+  sudo aptitude install -y memcached
+
+fancy_echo "Installing Elasticsearch ..."
+  sudo aptitude install -y elasticsearch
+
+fancy_echo "Installing ctags, to index files for vim tab completion of methods, classes, variables ..."
+  sudo aptitude install -y exuberant-ctags
+
+fancy_echo "Installing vim ..."
+  sudo aptitude install -y vim-gtk
+
+fancy_echo "Installing tmux, to save project state and switch between projects ..."
+  sudo aptitude install -y tmux
+
+fancy_echo "Installing ImageMagick, to crop and resize images ..."
+  sudo aptitude install -y imagemagick
+
+fancy_echo "Installing watch, to execute a program periodically and show the output ..."
+  sudo aptitude install -y watch
+
+fancy_echo "Installing curl ..."
+  sudo aptitude install -y curl
+
+fancy_echo "Installing wget ..."
+  sudo aptitude install -y wget
+
+fancy_echo "Installing nginx ..."
+  sudo aptitude install -y nginx
+
+# TODO: Install default template
+
+### end linux-components/debian-derivative-packages
+
+silver_searcher_from_source() {
+  git clone git://github.com/ggreer/the_silver_searcher.git /tmp/the_silver_searcher
+  sudo aptitude install -y automake pkg-config libpcre3-dev zlib1g-dev liblzma-dev
+  sh /tmp/the_silver_searcher/build.sh
+  cd /tmp/the_silver_searcher
+  sh build.sh
+  sudo make install
+  cd
+  rm -rf /tmp/the_silver_searcher
+}
+
+if ! command -v ag >/dev/null; then
+  fancy_echo "Installing The Silver Searcher (better than ack or grep) to search the contents of files ..."
+
+  if aptitude show silversearcher-ag &>/dev/null; then
+    sudo aptitude install silversearcher-ag
+  else
+    silver_searcher_from_source
+  fi
+fi
+### end linux-components/silver-searcher
+
+if [[ ! -d "$HOME/.rbenv" ]]; then
+  fancy_echo "Installing rbenv, to change Ruby versions ..."
+    git clone https://github.com/sstephenson/rbenv.git ~/.rbenv
+
+    append_to_bashrc 'export PATH="$HOME/.rbenv/bin:$PATH"'
+    append_to_bashrc 'eval "$(rbenv init -)"' 1
+
+    export PATH="$HOME/.rbenv/bin:$PATH"
+    eval "$(rbenv init -)"
+fi
+
+if [[ ! -d "$HOME/.rbenv/plugins/rbenv-gem-rehash" ]]; then
+  fancy_echo "Installing rbenv-gem-rehash so the shell automatically picks up binaries after installing gems with binaries..."
+    git clone https://github.com/sstephenson/rbenv-gem-rehash.git \
+      ~/.rbenv/plugins/rbenv-gem-rehash
+fi
+
+if [[ ! -d "$HOME/.rbenv/plugins/ruby-build" ]]; then
+  fancy_echo "Installing ruby-build, to install Rubies ..."
+    git clone https://github.com/sstephenson/ruby-build.git \
+      ~/.rbenv/plugins/ruby-build
+fi
+### end common-components/rbenv
+
+ruby_version="2.1.2"
+
+if !rbenv versions | grep $ruby_version; then
+
+  fancy_echo "Installing Ruby $ruby_version ..."
+    rbenv install -s "$ruby_version"
+
+  fancy_echo "Setting $ruby_version as global default Ruby ..."
+    rbenv global "$ruby_version"
+    rbenv rehash
+
+  fancy_echo "Updating to latest Rubygems version ..."
+    gem update --system
+
+  fancy_echo "Installing Bundler to install project-specific Ruby gems ..."
+    gem install bundler --no-document --pre
+fi
+### end common-components/ruby-environment
+
+fancy_echo "Configuring Bundler for faster, parallel gem installation ..."
+  number_of_cores=$(nproc)
+  bundle config --global jobs $((number_of_cores - 1))
+### end linux-components/bundler
+
+node_version="0.12.2"
+if !node -v | grep v$node_version; then
+  fancy_echo "Installing Node & npm  ($node_version) ..."
+  curl -L http://git.io/n-install | bash -s -- -y $node_version
+  export N_PREFIX="$HOME/n"; [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=":$N_PREFIX/bin"  # Added by n-install (see http://git.io/n-install-repo)
+fi
+### end common-components/ruby-environment
+
+fancy_echo "Installing your personal additions from ~/.laptop.local ..."
+  if [[ -f ~/.laptop.local ]]; then
+    source ~/.laptop.local
+  fi
+### end common-components/personal-additions
