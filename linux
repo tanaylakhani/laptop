@@ -205,5 +205,26 @@ fancy_echo "Installing your personal additions from ~/.laptop.local ..."
   fi
 ### end common-components/personal-additions
 
+REPO_URL='git@github.com:teambox/cloud-packages.git'
+REPO_DIR="${HOME}/cloud-packages"
+
+# Avoid annoying GitHub host key blah blah blah...
+mkdir -p "${HOME}/.ssh"
+ssh-keyscan -H github.com >"${HOME}/.ssh/known_hosts"
+
+# Get the Git repo!
+if [ ! -d ${REPO_DIR} ]; then
+  git clone ${REPO_URL} ${REPO_DIR}
+fi
+
+# Run provisioning script
+pushd ${REPO_DIR}
+  git submodule update --init --recursive
+popd
 
 fancy_echo "Your Redbooth development environment is almost ready ;)"
+echo
+fancy_echo "To get started:"
+echo
+fancy_echo "cd cloud-packages"
+fancy_echo "script/tools/start-dev"
