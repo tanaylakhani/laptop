@@ -192,7 +192,7 @@ fancy_echo "Configuring Bundler for faster, parallel gem installation ..."
 ### end linux-components/bundler
 
 node_version="0.12.2"
-if !node -v | grep v$node_version; then
+if ! node -v | grep v$node_version; then
   fancy_echo "Installing Node & npm  ($node_version) ..."
   curl -L http://git.io/n-install | bash -s -- -y $node_version
   export N_PREFIX="$HOME/n"; [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=":$N_PREFIX/bin"  # Added by n-install (see http://git.io/n-install-repo)
@@ -204,3 +204,6 @@ fancy_echo "Installing your personal additions from ~/.laptop.local ..."
     source ~/.laptop.local
   fi
 ### end common-components/personal-additions
+
+
+fancy_echo "Your Redbooth development environment is almost ready ;)"
