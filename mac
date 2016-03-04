@@ -114,6 +114,9 @@ gem_install_or_update() {
   fi
 }
 
+fancy_echo "Installing developer tools ..."
+xcode-select --install
+
 if ! command -v brew >/dev/null; then
   fancy_echo "Installing Homebrew ..."
     curl -fsS \
