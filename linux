@@ -69,7 +69,7 @@ fancy_echo "Installing git, for source control management ..."
   sudo aptitude install -y git-buildpackage git
 
 fancy_echo "Installing base ruby build dependencies ..."
-  sudo aptitude build-dep -y ruby1.9.3
+  sudo aptitude build-dep -y ruby1.9.1
 
 fancy_echo "Installing libraries for common gem dependencies ..."
   sudo aptitude install -y build-essential zlib1g-dev libssl-dev libxslt-dev libxml2-dev libreadline-dev libyaml-dev
@@ -212,15 +212,17 @@ REPO_DIR="${HOME}/cloud-packages"
 mkdir -p "${HOME}/.ssh"
 ssh-keyscan -H github.com >"${HOME}/.ssh/known_hosts"
 
-# Get the Git repo!
-if [ ! -d ${REPO_DIR} ]; then
-  git clone ${REPO_URL} ${REPO_DIR}
-fi
+if [ ${#SHARED_FOLDERS} -eq 0 ]; then
+  # Get the Git repo!
+  if [ ! -d ${REPO_DIR} ]; then
+    git clone ${REPO_URL} ${REPO_DIR}
+  fi
 
-# Run provisioning script
-pushd ${REPO_DIR}
-  git submodule update --init --recursive
-popd
+  # Run provisioning script
+  pushd ${REPO_DIR}
+    git submodule update --init --recursive
+  popd
+fi
 
 fancy_echo "Your Redbooth development environment is almost ready ;)"
 echo
