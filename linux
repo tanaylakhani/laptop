@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
-### end common-components/bash-shebang
 
-# Welcome to the thoughtbot laptop script! Be prepared to turn your laptop (or
+# Welcome to the redbooth laptop script! Be prepared to turn your laptop (or
 # desktop, no haters here) into an awesome development machine.
-### end common-components/header
+#
+# Usage:
+#  curl --remote-name https://raw.githubusercontent.com/redbooth/laptop/master/linux
+#  sh linux 2>&1 | tee ~/laptop.log
+#
 
 trap 'ret=$?; test $ret -ne 0 && printf "failed\n\n" >&2; exit $ret' EXIT
 
