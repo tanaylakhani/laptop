@@ -72,6 +72,16 @@ brew_install_or_upgrade() {
   fi
 }
 
+brew_cask_install_or_upgrade() {
+  if brew_is_installed "$1"; then
+    if brew_is_upgradable "$1"; then
+      brew upgrade "$@"
+    fi
+  else
+    brew cask install "$@"
+  fi
+}
+
 brew_is_installed() {
   local name
   name="$(brew_expand_alias "$1")"
@@ -177,7 +187,7 @@ brew_install_or_upgrade 'nginx'
 brew_launchctl_restart 'nginx'
 
 fancy_echo "Updating search engines ..."
-brew_install_or_upgrade 'Caskroom/cask/java'
+brew_cask_install_or_upgrade 'java'
 brew_install_or_upgrade 'elasticsearch'
 brew_launchctl_restart 'elasticsearch'
 
