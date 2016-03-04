@@ -255,6 +255,7 @@ fancy_echo "Your Redbooth development environment is almost ready ;)"
 fancy_echo "Now change to $HOME and type:"
 fancy_echo " git clone git@github.com:teambox/cloud-packages.git"
 fancy_echo " cd cloud-packages"
+fancy_echo " bundle config repo.redbooth.com repo:askfortheredboothrepopassword"
 fancy_echo " make setup #just once"
 
 

@@ -128,7 +128,6 @@ gem_install_or_update() {
   fi
 }
 
-
 ssh_key_installed() {
   mkdir -p $HOME/.ssh
   ls -la $HOME/.ssh | grep -E "dsa|rsa"
@@ -244,6 +243,7 @@ fancy_echo "Your Redbooth development environment is almost ready ;)"
 fancy_echo "Now change to $HOME/Sites and type:"
 fancy_echo " git clone git@github.com:teambox/cloud-packages.git"
 fancy_echo " cd cloud-packages"
+fancy_echo " bundle config repo.redbooth.com repo:askfortheredboothrepopassword"
 fancy_echo " make setup #just once"
 
 if [ -f "$HOME/.laptop.local" ]; then
