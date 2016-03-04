@@ -128,6 +128,27 @@ gem_install_or_update() {
   fi
 }
 
+
+ssh_key_installed() {
+  mkdir -p $HOME/.ssh
+  ls -la $HOME/.ssh | grep -E "dsa|rsa"
+}
+
+generate_ssh_key() {
+  if [ ! ssh_key_installed]; then
+    fancy_echo "Generating an ssh public/private key pair for you."
+    fancy_echo "Important: Accept the default path and filename!"
+    fancy_echo "Important: Make sure you type in a secure passphrase!!!"
+    echo
+    read -p "Type in your email:" USER_EMAIL
+    ssh-keygen -t rsa -b 4096 -C "$1"
+    eval "$(ssh-agent -s)"
+    ssh-add ~/.ssh/id_rsa
+    echo
+    fancy_echo "Now add your key to github.com (https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account)"
+  fi
+}
+
 fancy_echo "Installing developer tools ..."
 set +e
 xcode-select --install
@@ -215,6 +236,15 @@ gem update --system
 gem_install_or_update 'bundler'
 number_of_cores=$(sysctl -n hw.ncpu)
 bundle config --global jobs $((number_of_cores - 1))
+
+generate_ssh_key
+
+fancy_echo "Success!!!"
+fancy_echo "Your Redbooth development environment is almost ready ;)"
+fancy_echo "Now change to $HOME/Sites and type:"
+fancy_echo " git clone git@github.com:teambox/cloud-packages.git"
+fancy_echo " cd cloud-packages"
+fancy_echo " make setup #just once"
 
 if [ -f "$HOME/.laptop.local" ]; then
   fancy_echo "Running your customizations from ~/.laptop.local ..."
