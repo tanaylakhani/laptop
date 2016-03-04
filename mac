@@ -119,7 +119,9 @@ gem_install_or_update() {
 }
 
 fancy_echo "Installing developer tools ..."
+set +e
 xcode-select --install
+set -e
 
 if ! command -v brew >/dev/null; then
   fancy_echo "Installing Homebrew ..."
