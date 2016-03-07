@@ -148,6 +148,19 @@ generate_ssh_key() {
   fi
 }
 
+is_xcode_installed() {
+  /usr/bin/xcode-build -v &> /dev/null
+  "$?" -eq "0"
+}
+
+fancy_echo "Checking if XCode is installed..."
+
+if [ ! is_xcode_installed ]; then
+  fancy_echo "Unfortunately though you may not be an ios developer you still need to install xcode."
+  fancy_echo "Go to the Mac App Store and install xcode and try again..."
+  exit 1
+fi
+
 fancy_echo "Installing developer tools ..."
 set +e
 xcode-select --install
