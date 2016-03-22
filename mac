@@ -73,11 +73,7 @@ brew_install_or_upgrade() {
 }
 
 brew_cask_install_or_upgrade() {
-  if brew_is_installed "$1"; then
-    if brew_is_upgradable "$1"; then
-      brew cask upgrade "$@"
-    fi
-  else
+  if ! brew_is_installed "$1"; then
     brew cask install "$@"
   fi
 }
