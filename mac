@@ -219,6 +219,7 @@ brew_launchctl_restart 'nginx'
 
 fancy_echo "Updating search engines ..."
 brew_cask_install_or_upgrade 'java'
+brew install Caskroom/cask/java
 brew_install_or_upgrade 'elasticsearch'
 brew_launchctl_restart 'elasticsearch'
 
