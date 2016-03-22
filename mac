@@ -211,7 +211,7 @@ brew link mysql55 --force
 brew_install_or_upgrade 'redis'
 brew_install_or_upgrade 'memcached'
 brew_install_or_upgrade 'sqlite3'
-brew_launchctl_restart 'mysql'
+brew_launchctl_restart 'mysql55'
 brew_launchctl_restart 'redis'
 brew_launchctl_restart 'memcached'
 
