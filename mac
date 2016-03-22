@@ -199,10 +199,8 @@ brew_install_or_upgrade 'imagemagick'
 fancy_echo "Updating programming languages ..."
 brew_install_or_upgrade 'libyaml' # should come after openssl
 brew_install_or_upgrade 'libffi'
-brew_install_or_upgrade 'node'
 brew_install_or_upgrade 'rbenv'
 brew_install_or_upgrade 'ruby-build'
-brew_install_or_upgrade 'n'
 
 fancy_echo "Updating databases ..."
 brew_install_or_upgrade 'homebrew/versions/mysql55'
@@ -246,6 +244,14 @@ gem update --system
 gem_install_or_update 'bundler'
 number_of_cores=$(sysctl -n hw.ncpu)
 bundle config --global jobs $((number_of_cores - 1))
+
+fancy_echo "Installing and configuring Node..."
+node_version="0.12.2"
+if ! node -v | grep v$node_version; then
+  fancy_echo "Installing Node & npm  ($node_version) ..."
+  curl -L http://git.io/n-install | bash -s -- -y $node_version
+  export N_PREFIX="$HOME/n"; [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=":$N_PREFIX/bin"  # Added by n-install (see http://git.io/n-install-repo)
+fi
 
 generate_ssh_key
 
