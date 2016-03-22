@@ -187,6 +187,7 @@ fi
 fancy_echo "Updating Homebrew formulae ..."
 brew_tap 'thoughtbot/formulae'
 brew_tap 'homebrew/nginx'
+brew_tap 'homebrew/versions'
 
 brew update
 
@@ -208,7 +209,7 @@ brew_install_or_upgrade 'ruby-build'
 brew_install_or_upgrade 'n'
 
 fancy_echo "Updating databases ..."
-brew_install_or_upgrade 'mysql'
+brew_install_or_upgrade 'mysql55'
 brew_install_or_upgrade 'redis'
 brew_install_or_upgrade 'memcached'
 brew_install_or_upgrade 'sqlite3'
