@@ -204,6 +204,10 @@ brew_install_or_upgrade 'ruby-build'
 
 fancy_echo "Updating databases ..."
 brew_install_or_upgrade 'homebrew/versions/mysql55'
+MYSQL55_VERSION=`ls -la /usr/local/opt/ | grep mysql | cut -d "/" -f4`
+brew switch mysql55 $MYSQL55_VERSION
+brew link mysql55 --force
+
 brew_install_or_upgrade 'redis'
 brew_install_or_upgrade 'memcached'
 brew_install_or_upgrade 'sqlite3'
