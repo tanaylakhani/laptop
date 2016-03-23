@@ -72,7 +72,7 @@ append_to_bashrc 'export PATH="$HOME/.bin:$PATH"'
 ### end common-components/check-home-bin
 
 if ! grep -qiE 'trusty' /etc/os-release; then
-  fancy_echo "Sorry! we don't currently support that distro."
+  fancy_echo "Sorry! we don't currently support that distro, Enrico :trollface:"
   exit 1
 fi
 ### end linux-components/distro-check
